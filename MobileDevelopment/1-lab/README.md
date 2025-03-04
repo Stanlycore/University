@@ -1,9 +1,6 @@
 # Лабораторная работа №1: Настройка среды разработки Flutter
 
-## Описание проекта
 Данный проект представляет собой базовое приложение на фреймворке Flutter, созданное в рамках выполнения первой лабораторной работы по курсу мобильной разработки. Проект демонстрирует успешную настройку рабочей среды и базовые принципы работы с Flutter.
-
-## Выполненные этапы работы
 
 ### 1. Установка и настройка Flutter
 - Скачан и установлен Flutter SDK с официального сайта [flutter.dev](https://docs.flutter.dev/get-started/install)
@@ -46,7 +43,7 @@
 - Создан и отправлен начальный коммит:
   ```bash
   git add .
-  git commit -m "Initial commit"
+  git commit -m "first commit"
   git remote add origin https://github.com/Stanlycore/University.git
   git push -u origin master
   ```
@@ -61,10 +58,3 @@
 [!] VS Code (Visual Studio не требуется для текущей конфигурации)
 [√] Connected device (1 available)
 ```
-
-## Результаты
-Рабочий проект доступен в репозитории:  
-[GitHub репозиторий](https://github.com/Stanlycore/University.git)
-
-## Примечание
-Для корректной работы достаточно базовой настройки Android SDK и Flutter. Ошибка, связанная с отсутствием Visual Studio, не влияет на функциональность проекта.
