@@ -1,16 +1,33 @@
-# This is a sample Python script.
+__author__ = "Nepomnyaschikh S. I."
+import argparse
+from generators import *
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+def main():
+    # Создаем парсер для аргументов командной строки
+    parser = argparse.ArgumentParser(description="Генерация последовательностей на основе формул.")
+    parser.add_argument("n", type=int, nargs='?', help="Количество элементов в последовательности")
+    args = parser.parse_args()
+
+    # Если аргумент n не был передан через командную строку, запрашиваем его у пользователя
+    if args.n is None:
+        try:
+            n = int(input("Введите количество элементов в последовательности (n): "))
+        except ValueError:
+            print("Ошибка: Введите целое число.")
+            return
+    else:
+        n = args.n
+
+    # Генерация и вывод последовательностей
+    print("Результат а:", generate_sequence(n, a))
+    print("Результат б:", generate_sequence(n, b))
+    print("Результат в:", generate_sequence(n, c))
+    print("Результат г:", generate_sequence(n, d))
+    print("Результат д:", [f"{x:.3f}" for x in generate_sequence(n, e)])
+    print("Результат е:", [f"{x:.3f}" for x in generate_sequence(n, f)])
+    print("Результат ж:", [f"{x:.3f}" for x in generate_sequence(n, g)])
+    print("Результат з:", [f"{x:.3f}" for x in generate_sequence(n, h)])
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+if __name__ == "__main__":
+    main()
