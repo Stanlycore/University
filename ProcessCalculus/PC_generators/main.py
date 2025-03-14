@@ -19,10 +19,10 @@ def main():
         n = args.n
 
     # Генерация и вывод последовательностей
-    print("Результат а:", generate_sequence(n, a))
-    print("Результат б:", generate_sequence(n, b))
-    print("Результат в:", generate_sequence(n, c))
-    print("Результат г:", generate_sequence(n, d))
+    print("Результат а:", list(generate_sequence(n, a)))
+    print("Результат б:", list(generate_sequence(n, b)))
+    print("Результат в:", list(generate_sequence(n, c)))
+    print("Результат г:", list(generate_sequence(n, d)))
     print("Результат д:", [f"{x:.3f}" for x in generate_sequence(n, e)])
     print("Результат е:", [f"{x:.3f}" for x in generate_sequence(n, f)])
     print("Результат ж:", [f"{x:.3f}" for x in generate_sequence(n, g)])

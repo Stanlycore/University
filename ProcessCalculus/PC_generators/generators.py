@@ -1,6 +1,6 @@
 __author__ = "Nepomnyaschikh S. I."
 from math import factorial
-from typing import Callable
+from typing import Callable, Generator
 
 # Лямбда-функции для формул
 a: Callable[[int], int] = lambda i: i
@@ -12,11 +12,12 @@ f: Callable[[int], float] = lambda i: sum(1 / k for k in range(1, i + 1))
 g: Callable[[int], float] = lambda i: sum((-1) ** (k + 1) / k for k in range(1, i + 1))
 h: Callable[[int], float] = lambda i: i * sum(1 / factorial(k) for k in range(1, i + 1))
 
-def generate_sequence(n: int, formula: Callable[[int], float]) -> list[float]:
+def generate_sequence(n: int, formula: Callable[[int], float]) -> Generator[float, None, None]:
     """
-    Генерация последовательности на основе заданной формулы.
+    Генерация последовательности на основе заданной формулы с использованием yield.
     :param n: Количество элементов в последовательности.
     :param formula: Функция, описывающая формулу последовательности.
-    :return: Список значений последовательности.
+    :yield: Значения последовательности одно за другим.
     """
-    return [formula(i) for i in range(1, n + 1)]
+    for i in range(1, n + 1):
+        yield formula(i)

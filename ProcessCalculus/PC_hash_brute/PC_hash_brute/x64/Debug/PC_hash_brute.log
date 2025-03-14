@@ -1,0 +1,2 @@
+﻿  PC_hash_brute.cpp
+C:\Users\Star\Documents\GitHub\University\ProcessCalculus\PC_hash_brute\PC_hash_brute\PC_hash_brute.cpp(4,10): error C1083: Не удается открыть файл включение: openssl/sha.h: No such file or directory,

@@ -9,4 +9,7 @@ def sum_series_136o(a_values):
     :param a_values: список действительных чисел [a1, ..., an]
     :return: сумма ряда
     """
-    return sum(math.sqrt(10 + a ** 2) for a in a_values)
+    total = 0  # Инициализация
+    for a in a_values:
+        total += math.sqrt(10 + a ** 2)
+    return total
