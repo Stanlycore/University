@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Непомнящх Станислав Игоревич'), // Замените на свои ФИО
+          title: Text('Непомнящх Станислав Игоревич'),
         ),
         body: MyHomePage(),
       ),
@@ -25,7 +25,6 @@ class MyHomePage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          // Отступы реализованы через Padding вместо Container
           Padding(
             padding: EdgeInsets.all(16.0),
             child: Text(
