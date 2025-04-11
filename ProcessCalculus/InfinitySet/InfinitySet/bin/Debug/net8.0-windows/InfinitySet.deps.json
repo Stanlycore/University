@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "InfinitySet/1.0.0": {
+        "runtime": {
+          "InfinitySet.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "InfinitySet/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
