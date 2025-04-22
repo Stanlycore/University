@@ -7,6 +7,14 @@
       "RelativeMoniker": "D:0:0:{DA32DEFF-53AE-4BEB-928D-954F39E860A1}|InfinitySet\\InfinitySet.csproj|solutionrelative:infinityset\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{DA32DEFF-53AE-4BEB-928D-954F39E860A1}|InfinitySet\\InfinitySet.csproj|c:\\users\\star\\documents\\github\\university\\processcalculus\\infinityset\\infinityset\\mandelbrotcalculator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DA32DEFF-53AE-4BEB-928D-954F39E860A1}|InfinitySet\\InfinitySet.csproj|solutionrelative:infinityset\\mandelbrotcalculator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DA32DEFF-53AE-4BEB-928D-954F39E860A1}|InfinitySet\\InfinitySet.csproj|c:\\users\\star\\documents\\github\\university\\processcalculus\\infinityset\\infinityset\\unittest1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DA32DEFF-53AE-4BEB-928D-954F39E860A1}|InfinitySet\\InfinitySet.csproj|solutionrelative:infinityset\\unittest1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{DA32DEFF-53AE-4BEB-928D-954F39E860A1}|InfinitySet\\InfinitySet.csproj|c:\\users\\star\\documents\\github\\university\\processcalculus\\infinityset\\infinityset\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{DA32DEFF-53AE-4BEB-928D-954F39E860A1}|InfinitySet\\InfinitySet.csproj|solutionrelative:infinityset\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
@@ -18,18 +26,45 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "UnitTest1.cs",
+              "DocumentMoniker": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\InfinitySet\\InfinitySet\\UnitTest1.cs",
+              "RelativeDocumentMoniker": "InfinitySet\\UnitTest1.cs",
+              "ToolTip": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\InfinitySet\\InfinitySet\\UnitTest1.cs",
+              "RelativeToolTip": "InfinitySet\\UnitTest1.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACYAAAAeAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-18T03:15:57.836Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "MandelbrotCalculator.cs",
+              "DocumentMoniker": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\InfinitySet\\InfinitySet\\MandelbrotCalculator.cs",
+              "RelativeDocumentMoniker": "InfinitySet\\MandelbrotCalculator.cs",
+              "ToolTip": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\InfinitySet\\InfinitySet\\MandelbrotCalculator.cs",
+              "RelativeToolTip": "InfinitySet\\MandelbrotCalculator.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAEQAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-18T03:08:05.302Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\InfinitySet\\InfinitySet\\MainWindow.xaml",
               "RelativeDocumentMoniker": "InfinitySet\\MainWindow.xaml",
               "ToolTip": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\InfinitySet\\InfinitySet\\MainWindow.xaml",
               "RelativeToolTip": "InfinitySet\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-04-04T03:15:28.867Z"
+              "WhenOpened": "2025-04-04T03:15:28.867Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -39,7 +74,7 @@
               "RelativeDocumentMoniker": "InfinitySet\\MainWindow.xaml.cs",
               "ToolTip": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\InfinitySet\\InfinitySet\\MainWindow.xaml.cs",
               "RelativeToolTip": "InfinitySet\\MainWindow.xaml.cs",
-              "ViewState": "AQIAABABAAAAAAAAAAAswGMBAAANAAAA",
+              "ViewState": "AQIAAPUAAAAAAAAAAAAgwAYBAAA9AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-04T03:15:28.515Z",
               "EditorCaption": ""

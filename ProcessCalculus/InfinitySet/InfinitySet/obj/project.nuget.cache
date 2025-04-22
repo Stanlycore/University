@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "svHQVKafveYH1KRulKczLwPxGHaS4CBa4ihHSgo+Y7EDb6eBwIOsabaCpkqNxx5x+lMj5l0dtspbioKtR4eQkg==",
+  "dgSpecHash": "ZaECOKG3tgrHzOycf05DCzB3udmt6Eqm8a4Fr7nwe6FwOUxsYuipebf3lbb4PpSgLpe/O+h80Kgv/CMrR/svDg==",
   "success": true,
   "projectFilePath": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\InfinitySet\\InfinitySet\\InfinitySet.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Star\\.nuget\\packages\\mstest.testframework\\3.1.1\\mstest.testframework.3.1.1.nupkg.sha512"
+  ],
   "logs": []
 }

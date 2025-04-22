@@ -6,6 +6,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using System.IO;
+using System.Diagnostics;
 
 namespace MandelbrotApp
 {
@@ -13,30 +15,33 @@ namespace MandelbrotApp
     {
         // Начальные параметры для множества Мандельброта
         // Используются для сброса к начальному виду (клавиша Space)
-        decimal initialCenterX = -0.5m; // Начальная X-координата центра
-        decimal initialCenterY = 0m;    // Начальная Y-координата центра
-        decimal initialScale = 3m;      // Начальный масштаб (ширина области в комплексной плоскости)
+        private readonly decimal initialCenterX = -0.5m; // Начальная X-координата центра
+        private readonly decimal initialCenterY = 0m;    // Начальная Y-координата центра
+        private readonly decimal initialScale = 3m;      // Начальный масштаб (ширина области в комплексной плоскости)
 
         // Текущие параметры отображения, изменяются при зуме и перемещении
-        decimal centerX;                // Текущая X-координата центра изображения
-        decimal centerY;                // Текущая Y-координата центра изображения
-        decimal scale;                  // Текущий масштаб (ширина области в комплексной плоскости)
-        int maxIterations = 100;        // Максимальное число итераций для алгоритма Мандельброта
+        private decimal centerX;                // Текущая X-координата центра изображения
+        private decimal centerY;                // Текущая Y-координата центра изображения
+        private decimal scale;                  // Текущий масштаб (ширина области в комплексной плоскости)
+        private int maxIterations = 100;        // Максимальное число итераций для алгоритма Мандельброта
 
-        WriteableBitmap bitmap;         // Битовая карта для отрисовки изображения
-        int width, height;              // Размеры изображения в пикселях
+        private WriteableBitmap bitmap;         // Битовая карта для отрисовки изображения
+        private int width, height;              // Размеры изображения в пикселях
 
         // Объект для управления отменой задач рендеринга
-        CancellationTokenSource cts = new CancellationTokenSource();
+        private CancellationTokenSource cts = new CancellationTokenSource();
 
         // Таймер для непрерывного зума при зажатой кнопке мыши
-        DispatcherTimer zoomTimer;      // Управляет периодическим вызовом зума
-        Point lastClickPoint;           // Последняя позиция клика мыши
-        bool isZooming = false;         // Флаг, указывающий, выполняется ли зум
+        private readonly DispatcherTimer zoomTimer; // Управляет периодическим вызовом зума
+        private Point lastClickPoint;           // Последняя позиция клика мыши
+        private bool isZooming = false;         // Флаг, указывающий, выполняется ли зум
 
         // Параметры для контролируемого пула потоков
-        readonly int threadCount;       // Оптимальное число потоков для Parallel.For
-        readonly ParallelOptions parallelOptions; // Настройки для Parallel.For
+        private readonly int threadCount;       // Оптимальное число потоков для Parallel.For
+        private readonly ParallelOptions parallelOptions; // Настройки для Parallel.For
+
+        // Стрим для записи времени в файл
+        private StreamWriter timeLogger;
 
         /// <summary>
         /// Конструктор окна. Инициализирует параметры, пул потоков и таймер для зума.
@@ -68,6 +73,9 @@ namespace MandelbrotApp
             zoomTimer = new DispatcherTimer();
             zoomTimer.Interval = TimeSpan.FromMilliseconds(300); // Зум каждые 300 мс
             zoomTimer.Tick += ZoomTimer_Tick;
+
+            // Открытие файла для логирования времени рендеринга
+            timeLogger = new StreamWriter("render_times.txt", append: true);
         }
 
         /// <summary>
@@ -97,9 +105,24 @@ namespace MandelbrotApp
         /// <summary>
         /// Запускает генерацию множества Мандельброта в фоновом потоке с прогрессивным улучшением качества.
         /// Каждый вызов отменяет предыдущую задачу рендеринга.
+        /// Алгоритм:
+        /// 1. Отменяет текущую задачу рендеринга через CancellationTokenSource.
+        /// 2. Использует прогрессивный рендеринг с несколькими уровнями качества (от грубого к детализированному).
+        /// 3. Для каждого уровня качества вычисляет пиксели параллельно с помощью Parallel.For.
+        /// 4. Для финального рендеринга разбивает изображение на блоки для оптимизации обновления UI.
+        /// 5. Обновляет изображение в основном потоке через Dispatcher.Invoke.
         /// </summary>
         private void RenderMandelbrot()
         {
+            // Используем Stopwatch для точного замера времени в миллисекундах
+            var totalStopwatch = Stopwatch.StartNew();
+
+            // Записываем время начала рендеринга
+            timeLogger.WriteLine(new string('-', 50));
+            timeLogger.WriteLine($"Render started at {DateTime.Now:HH:mm:ss.fff}");
+            timeLogger.WriteLine($"Total rendering process");
+            timeLogger.WriteLine(new string('-', 50));
+
             // Отменяем текущую задачу рендеринга
             cts.Cancel();
             cts = new CancellationTokenSource();
@@ -110,15 +133,21 @@ namespace MandelbrotApp
             {
                 // Массив уровней качества: от грубого (16) до полного (1)
                 int[] qualityLevels = { 16, 8, 4, 2, 1 };
+
                 foreach (int quality in qualityLevels)
                 {
-                    int stride = width * 4;                     // Stride — это длина строки в байтах для одномерного
-                                                                // массива пикселей
-                                                                // (ширина * 4 байта на пиксель: B, G, R, A)
+                    // Создаем Stopwatch для текущего уровня качества
+                    var stageStopwatch = Stopwatch.StartNew();
 
-                    byte[] pixels = new byte[height * stride];  // Одномерный массив для хранения пикселей изображения;
-                                                                // используется вместо двумерного для совместимости с
-                                                                // WritePixels и оптимизации доступа к памяти
+                    // Записываем начало этапа в отдельном блоке
+                    timeLogger.WriteLine(new string('=', 50));
+                    timeLogger.WriteLine($"Quality level: {quality}");
+                    timeLogger.WriteLine($"Started at: {DateTime.Now:HH:mm:ss.fff}");
+                    timeLogger.WriteLine(new string('=', 50));
+
+                    int stride = width * 4; // Длина строки в байтах (ширина * 4 байта на пиксель: B, G, R, A)
+                    byte[] pixels = new byte[height * stride]; // Массив для хранения пикселей изображения
+
                     if (quality == 1)
                     {
                         // Финальный рендеринг: разбиваем изображение на блоки по 100 строк
@@ -127,7 +156,7 @@ namespace MandelbrotApp
                         {
                             int blockEnd = Math.Min(blockStart + blockSize, height);
 
-                            // Параллельно вычисляем строки в блоке с ограниченным числом потоков
+                            // Параллельно вычисляем строки в блоке
                             Parallel.For(blockStart, blockEnd, parallelOptions, y =>
                             {
                                 if (token.IsCancellationRequested)
@@ -135,17 +164,14 @@ namespace MandelbrotApp
 
                                 for (int x = 0; x < width; x++)
                                 {
-                                    // a и b — действительная и мнимая части комплексного числа c,
-                                    // соответствующего координатам пикселя (x, y) на комплексной плоскости
+                                    // Преобразуем координаты пикселя в точку на комплексной плоскости
                                     decimal a = centerX + (x - width / 2.0m) * (scale / width);
                                     decimal b = centerY + (y - height / 2.0m) * (scale / width);
-                                    int iterations = Mandelbrot(a, b, maxIterations);
-                                    int color = GetColor(iterations, maxIterations);
+                                    int iterations = MandelbrotCalculator.Mandelbrot(a, b, maxIterations);
+                                    int color = MandelbrotCalculator.GetColor(iterations, maxIterations);
 
                                     // Записываем цвет в массив пикселей
-                                    int index = y * stride + x * 4; // Индекс в одномерном массиве:
-                                                                    // y * stride переходит к строке,
-                                                                    // x * 4 — к пикселю в строке
+                                    int index = y * stride + x * 4;
                                     pixels[index] = (byte)(color & 0xFF);         // Синий
                                     pixels[index + 1] = (byte)((color >> 8) & 0xFF);  // Зелёный
                                     pixels[index + 2] = (byte)((color >> 16) & 0xFF); // Красный
@@ -157,7 +183,7 @@ namespace MandelbrotApp
                             Dispatcher.Invoke(() =>
                             {
                                 Int32Rect rect = new Int32Rect(0, blockStart, width, blockEnd - blockStart);
-                                bitmap.WritePixels(rect, pixels, stride, blockStart * stride); // stride указывает длину строки для правильного чтения из одномерного массива
+                                bitmap.WritePixels(rect, pixels, stride, blockStart * stride);
                             });
 
                             if (token.IsCancellationRequested)
@@ -177,11 +203,11 @@ namespace MandelbrotApp
                                 if (x % quality != 0 || y % quality != 0)
                                     continue;
 
-                                // a и b представляют точку c на комплексной плоскости, для которой проверяется принадлежность множеству Мандельброта
+                                // Преобразуем координаты пикселя в точку на комплексной плоскости
                                 decimal a = centerX + (x - width / 2.0m) * (scale / width);
                                 decimal b = centerY + (y - height / 2.0m) * (scale / width);
-                                int iterations = Mandelbrot(a, b, maxIterations);
-                                int color = GetColor(iterations, maxIterations);
+                                int iterations = MandelbrotCalculator.Mandelbrot(a, b, maxIterations);
+                                int color = MandelbrotCalculator.GetColor(iterations, maxIterations);
 
                                 int index = y * stride + x * 4;
                                 pixels[index] = (byte)(color & 0xFF);
@@ -194,7 +220,7 @@ namespace MandelbrotApp
                                 {
                                     for (int dx = 0; dx < quality && (x + dx) < width; dx++)
                                     {
-                                        int idx = (y + dy) * stride + (x + dx) * 4; // Индексация с учётом stride для доступа к соседним пикселям
+                                        int idx = (y + dy) * stride + (x + dx) * 4;
                                         pixels[idx] = (byte)(color & 0xFF);
                                         pixels[idx + 1] = (byte)((color >> 8) & 0xFF);
                                         pixels[idx + 2] = (byte)((color >> 16) & 0xFF);
@@ -212,52 +238,25 @@ namespace MandelbrotApp
                         });
                     }
 
+                    // Останавливаем таймер этапа и записываем время окончания
+                    stageStopwatch.Stop();
+                    timeLogger.WriteLine($"Ended at: {DateTime.Now:HH:mm:ss.fff}");
+                    timeLogger.WriteLine($"Duration: {stageStopwatch.ElapsedMilliseconds} ms");
+                    timeLogger.WriteLine(new string('=', 50));
+                    timeLogger.Flush();
+
                     if (token.IsCancellationRequested)
                         break;
                 }
+
+                // Останавливаем общий таймер и записываем общее время
+                totalStopwatch.Stop();
+                timeLogger.WriteLine(new string('-', 50));
+                timeLogger.WriteLine($"Render ended at {DateTime.Now:HH:mm:ss.fff}");
+                timeLogger.WriteLine($"Total render time: {totalStopwatch.ElapsedMilliseconds} ms");
+                timeLogger.WriteLine(new string('-', 50));
+                timeLogger.Flush();
             }, token);
-        }
-
-        /// <summary>
-        /// Вычисляет количество итераций для точки (a, b) в множестве Мандельброта.
-        /// </summary>
-        /// <param name="a">Действительная часть комплексного числа</param>
-        /// <param name="b">Мнимая часть комплексного числа</param>
-        /// <param name="maxIter">Максимальное число итераций</param>
-        /// <returns>Число итераций до выхода за пределы или maxIter</returns>
-        private int Mandelbrot(decimal a, decimal b, int maxIter)
-        {
-            decimal ca = a;
-            decimal cb = b;
-            int iter = 0;
-
-            for (; iter < maxIter; iter++)
-            {
-                decimal aa = a * a - b * b;
-                decimal bb = 2 * a * b;
-                a = ca + aa;
-                b = cb + bb;
-                if (a * a + b * b > 16)
-                    break;
-            }
-            return iter;
-        }
-
-        /// <summary>
-        /// Преобразует число итераций в цвет для визуализации.
-        /// </summary>
-        /// <param name="iter">Число итераций</param>
-        /// <param name="maxIter">Максимальное число итераций</param>
-        /// <returns>Цвет в формате ARGB</returns>
-        private int GetColor(int iter, int maxIter)
-        {
-            if (iter == maxIter)
-                return 0x000000;
-
-            int r = (iter * 9) % 256;
-            int g = (iter * 7) % 256;
-            int b = (iter * 5) % 256;
-            return (r << 16) | (g << 8) | b;
         }
 
         /// <summary>
@@ -304,6 +303,12 @@ namespace MandelbrotApp
 
         /// <summary>
         /// Выполняет зум в прямоугольной области вокруг точки клика.
+        /// Алгоритм:
+        /// 1. Определяет прямоугольник размером 90% от текущего изображения, центрированный в точке клика.
+        /// 2. Корректирует координаты прямоугольника, чтобы он не выходил за границы изображения.
+        /// 3. Вычисляет новый центр изображения и масштаб на основе прямоугольника.
+        /// 4. Увеличивает количество итераций для повышения детализации.
+        /// 5. Запускает рендеринг с новыми параметрами.
         /// </summary>
         private void ZoomToRect(Point clickPoint)
         {
@@ -331,7 +336,7 @@ namespace MandelbrotApp
         }
 
         /// <summary>
-        /// Обработчик нажатия клавиш: управление приложением.
+        /// Обработчик нажатия клавиши пробела: сбрасывает изображение в исходное состояние.
         /// </summary>
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("InfinitySet")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d13fe94551783b0351589a991bc5d85b5c224185")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d91448b49b504939a509344827589be0ec66579f")]
 [assembly: System.Reflection.AssemblyProductAttribute("InfinitySet")]
 [assembly: System.Reflection.AssemblyTitleAttribute("InfinitySet")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

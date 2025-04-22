@@ -5,7 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ac7a5b17-2235-42c2-af58-21aaa83b52b7" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/.vs/InfinitySet/FileContentIndex/f48429d2-26c1-4c5b-8e0c-99dc073c306a.vsidx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/.vs/InfinitySet/v17/.suo" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/.vs/InfinitySet/v17/.suo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/.vs/InfinitySet/v17/DocumentLayout.json" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/.vs/InfinitySet/v17/DocumentLayout.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/MainWindow.xaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/MainWindow.xaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/bin/Release/net8.0-windows/InfinitySet.dll" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/bin/Release/net8.0-windows/InfinitySet.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/bin/Release/net8.0-windows/InfinitySet.exe" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/bin/Release/net8.0-windows/InfinitySet.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/bin/Release/net8.0-windows/InfinitySet.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/bin/Release/net8.0-windows/InfinitySet.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet.csproj.FileListAbsolute.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet.dll" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet.genruntimeconfig.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet.genruntimeconfig.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet_MarkupCompile.cache" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/InfinitySet_MarkupCompile.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/MainWindow.g.i.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/MainWindow.g.i.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/apphost.exe" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/apphost.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/ref/InfinitySet.dll" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/ref/InfinitySet.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/refint/InfinitySet.dll" beforeDir="false" afterPath="$PROJECT_DIR$/../InfinitySet/InfinitySet/obj/Release/net8.0-windows/refint/InfinitySet.dll" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
