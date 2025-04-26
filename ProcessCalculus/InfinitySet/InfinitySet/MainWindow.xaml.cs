@@ -251,10 +251,8 @@ namespace MandelbrotApp
 
                 // Останавливаем общий таймер и записываем общее время
                 totalStopwatch.Stop();
-                timeLogger.WriteLine(new string('-', 50));
                 timeLogger.WriteLine($"Render ended at {DateTime.Now:HH:mm:ss.fff}");
                 timeLogger.WriteLine($"Total render time: {totalStopwatch.ElapsedMilliseconds} ms");
-                timeLogger.WriteLine(new string('-', 50));
                 timeLogger.Flush();
             }, token);
         }
