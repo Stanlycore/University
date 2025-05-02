@@ -396,16 +396,27 @@ namespace Sha512CrackerWpfApp
         // Метод вычисления SHA-512 хэша
         private string CalculateSha512(string input)
         {
+            // Создаем новый экземпляр объекта Sha512Digest из библиотеки BouncyCastle для вычисления SHA-512 хэша
             Sha512Digest digest = new Sha512Digest();
+            // Преобразуем входную строку (пароль) в массив байтов, используя кодировку UTF-8
             byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+
+            // Передаем массив байтов в алгоритм хэширования, указывая начальную позицию (0) и длину массива
             digest.BlockUpdate(inputBytes, 0, inputBytes.Length);
+            // Создаем массив байтов для хранения результата хэша, размер которого определяется методом GetDigestSize
             byte[] hashBytes = new byte[digest.GetDigestSize()];
+
+            // Завершаем процесс хэширования и записываем результат в массив hashBytes, начиная с позиции 0
             digest.DoFinal(hashBytes, 0);
+            // Создаем StringBuilder для построения строки шестнадцатеричного представления хэша
             StringBuilder sb = new StringBuilder();
+            // Проходим по каждому байту в массиве хэша
             for (int i = 0; i < hashBytes.Length; i++)
             {
+                // Преобразуем байт в строку в шестнадцатеричном формате (две цифры, строчные буквы) и добавляем в StringBuilder
                 sb.Append(hashBytes[i].ToString("x2"));
             }
+            // Возвращаем итоговую строку хэша в виде шестнадцатеричного представления
             return sb.ToString();
         }
 
