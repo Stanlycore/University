@@ -269,8 +269,8 @@ namespace GeneticAlgorithmTSP
             bestIndividual = population.OrderBy(ind => ind.Fitness).First();
             generation = 0;
 
-            // Явная установка максимального числа потоков в ThreadPool
-            ThreadPool.SetMaxThreads(threadsCount, threadsCount);
+            // Установка максимального числа потоков в ThreadPool
+            ThreadPool.SetMaxThreads(1, threadsCount);
 
             // Основной цикл алгоритма
             while (isRunning)
@@ -402,7 +402,7 @@ namespace GeneticAlgorithmTSP
                 individual.Route[i] = individual.Route[j];
                 individual.Route[j] = temp;
             }
-            else if (rand.NextDouble() < 0.55) // 5% получают случайное количество мутаций (от 1 до cities.Count/2)
+            else if (rand.NextDouble() < 0.55) // 10% получают случайное количество мутаций (от 1 до cities.Count/2)
             {
                 int maxMutations = Math.Max(1, cities.Count / 2);
                 int mutationCount = rand.Next(1, maxMutations + 1);

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -40,30 +39,27 @@ namespace Sha512CrackerWpfApp
             "ed451f8b3026c6236d9282ceaa6b0cba69be4c80040430fb0b65e32119bdc2bfc8debdfbe530711c94550c3b947c3fab5eac0e079cf690b0b5fd6b53bb6631c9",
             "af52cba7ccb488166d3c67d935f239339744e294da8e573ae97306e1f9c20514d9a2d3bd7ccb718b6f389ede297645bc25a502174b8b2120a1f5b743dd04301d"
         };
-        // Набор символов для генерации паролей
-        private static readonly string Charset = "0123456789abcdefghijklmnopqrstuvwxyz";
-        // Длина пароля
-        private const int PasswordLength = 7;
+
+        // Текущий алфавит для генерации паролей
+        private string charset;
+        // Текущая длина пароля
+        private int passwordLength;
         // Множество для хранения найденных хэшей
         private HashSet<string> foundHashes = new HashSet<string>();
         // Список целевых хэшей для взлома
         private List<string> targetHashes;
         // Объект для управления отменой задач
         private CancellationTokenSource cts;
-        // Секундомер
+        // Секундомер для отслеживания времени работы
         private Stopwatch stopwatch;
         // Задача для обновления времени
         private Task timerTask;
         // Токен отмены для таймера
         private CancellationTokenSource timerCts;
-        // Задача для обновления прогресса UI
-        private Task progressUpdateTask;
-        // Токен отмены для задачи прогресса
-        private CancellationTokenSource progressCts;
-        // Потокобезопасная коллекция для текущих паролей
-        private ConcurrentDictionary<int, string> currentPasswords;
-        // Потокобезопасная коллекция для текущих индексов
-        private ConcurrentDictionary<int, long> currentIndexes;
+        // Текущий пароль
+        private string currentPassword = "Нет данных";
+        // Текущий индекс комбинации
+        private long currentIndex;
         // Флаг, указывающий, приостановлена ли работа
         private bool isPaused;
         // Сохраненное время из файла прогресса
@@ -79,6 +75,32 @@ namespace Sha512CrackerWpfApp
             // Загружаем сохраненный прогресс и результаты
             LoadProgress();
             LoadResults();
+            // Инициализируем начальные значения алфавита и длины пароля
+            charset = CharsetTextBox.Text;
+            passwordLength = int.TryParse(PasswordLengthTextBox.Text, out int length) ? length : 7;
+        }
+
+        // Обработчик нажатия кнопки "Подтвердить" для алфавита и длины пароля
+        private void ConfirmSettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Проверяем и сохраняем алфавит
+            string newCharset = CharsetTextBox.Text;
+            if (string.IsNullOrWhiteSpace(newCharset))
+            {
+                ResultsTextBox.AppendText("Ошибка: алфавит не может быть пустым.\n");
+                return;
+            }
+            charset = newCharset;
+
+            // Проверяем и сохраняем длину пароля
+            if (!int.TryParse(PasswordLengthTextBox.Text, out int newLength) || newLength <= 0)
+            {
+                ResultsTextBox.AppendText("Ошибка: длина пароля должна быть положительным числом.\n");
+                return;
+            }
+            passwordLength = newLength;
+
+            ResultsTextBox.AppendText($"Установлены алфавит: {charset}, длина пароля: {passwordLength}\n");
         }
 
         // Загрузка сохраненного прогресса из файла
@@ -89,8 +111,6 @@ namespace Sha512CrackerWpfApp
                 try
                 {
                     string[] lines = File.ReadAllLines("progress.txt");
-                    currentPasswords = new ConcurrentDictionary<int, string>();
-                    currentIndexes = new ConcurrentDictionary<int, long>();
                     foreach (string line in lines)
                     {
                         if (line.StartsWith("Elapsed Time:"))
@@ -99,17 +119,13 @@ namespace Sha512CrackerWpfApp
                             TimeSpan savedTime = TimeSpan.FromTicks(savedElapsedTicks);
                             TimerTextBlock.Text = $"Прошедшее время: {savedTime:hh\\:mm\\:ss}";
                         }
-                        else if (line.StartsWith("Поток ") && line.Contains(":"))
+                        else if (line.StartsWith("Пароль:") && line.Contains(":"))
                         {
-                            // Пример строки: "Поток 1: abcdefg:123456"
                             string[] parts = line.Split(':');
                             if (parts.Length >= 3)
                             {
-                                int threadId = int.Parse(parts[0].Replace("Поток ", "").Trim()) - 1;
-                                string password = parts[1].Trim();
-                                long index = long.Parse(parts[2].Trim());
-                                currentPasswords.TryAdd(threadId, password);
-                                currentIndexes.TryAdd(threadId, index);
+                                currentPassword = parts[1].Trim();
+                                currentIndex = long.Parse(parts[2].Trim());
                             }
                         }
                     }
@@ -134,7 +150,6 @@ namespace Sha512CrackerWpfApp
                         if (!string.IsNullOrWhiteSpace(line))
                         {
                             ResultsTextBox.AppendText($"{line}\n");
-                            // Добавляем хэш в foundHashes для учета
                             string[] parts = line.Split(':');
                             if (parts.Length == 2)
                             {
@@ -150,7 +165,7 @@ namespace Sha512CrackerWpfApp
             }
         }
 
-        // Обновление времени в UI
+        // Асинхронное обновление времени в UI
         private async Task UpdateTimerAsync(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
@@ -171,7 +186,7 @@ namespace Sha512CrackerWpfApp
             }
         }
 
-        // Обновление прогресса потоков в UI
+        // Асинхронное обновление прогресса в UI
         private async Task UpdateProgressAsync(CancellationToken token)
         {
             while (!token.IsCancellationRequested)
@@ -179,10 +194,7 @@ namespace Sha512CrackerWpfApp
                 Dispatcher.Invoke(() =>
                 {
                     ThreadProgressListBox.Items.Clear();
-                    foreach (var kvp in currentPasswords.OrderBy(k => k.Key))
-                    {
-                        ThreadProgressListBox.Items.Add($"Поток {kvp.Key + 1}: {kvp.Value}");
-                    }
+                    ThreadProgressListBox.Items.Add($"Пароль: {currentPassword}");
                 });
                 try
                 {
@@ -198,22 +210,20 @@ namespace Sha512CrackerWpfApp
         // Обработчик нажатия кнопки "Начать"
         private async void StartButton_Click(object sender, RoutedEventArgs e)
         {
-            // Получаем хэши из текстового поля, разделяя по строкам
+            // Проверяем, установлен ли алфавит и длина пароля
+            if (string.IsNullOrEmpty(charset) || passwordLength <= 0)
+            {
+                ResultsTextBox.AppendText("Ошибка: необходимо подтвердить алфавит и длину пароля.\n");
+                return;
+            }
+
+            // Получаем хэши из текстового поля
             targetHashes = HashesTextBox.Text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            // Если прогресс не загружен, инициализируем коллекции
-            if (currentPasswords == null)
-            {
-                currentPasswords = new ConcurrentDictionary<int, string>();
-            }
-            if (currentIndexes == null)
-            {
-                currentIndexes = new ConcurrentDictionary<int, long>();
-            }
             // Очищаем поле результатов, если это новый запуск
             if (!isPaused)
             {
                 ResultsTextBox.Clear();
-                LoadResults(); // Перезагружаем результаты
+                LoadResults();
             }
             // Обновляем счетчик найденных хэшей
             FoundCountTextBlock.Text = $"Найдено: {foundHashes.Count}/{targetHashes.Count}";
@@ -223,36 +233,30 @@ namespace Sha512CrackerWpfApp
             PauseResumeButton.IsEnabled = true;
             // Включаем кнопку "Сброс"
             ResetButton.IsEnabled = true;
-            // Создаем новый источник токена отмены для задач
+            // Создаем новый источник токена отмены
             cts = new CancellationTokenSource();
-            // Создаем новый источник токена отмены для таймера
             timerCts = new CancellationTokenSource();
-            // Создаем новый источник токена отмены для прогресса
-            progressCts = new CancellationTokenSource();
             // Запускаем секундомер
             stopwatch.Restart();
             // Запускаем задачу обновления времени
             timerTask = UpdateTimerAsync(timerCts.Token);
             // Запускаем задачу обновления прогресса
-            progressUpdateTask = UpdateProgressAsync(progressCts.Token);
+            Task progressTask = UpdateProgressAsync(timerCts.Token);
             // Сбрасываем флаг паузы
             isPaused = false;
-            // Устанавливаем текст кнопки на "Пауза"
             PauseResumeButton.Content = "Пауза";
 
             try
             {
-                // Запускаем процесс взлома асинхронно
-                await RunCrackerAsync(cts.Token);
+                // Запускаем процесс взлома асинхронно в одном потоке
+                await Task.Run(() => Crack(0, (long)Math.Pow(charset.Length, passwordLength), targetHashes.ToArray(), cts.Token), cts.Token);
             }
             catch (OperationCanceledException)
             {
-                // Если задача была отменена, выводим сообщение
                 ResultsTextBox.AppendText("Взлом приостановлен.\n");
             }
             finally
             {
-                // Очищаем ресурсы после завершения
                 Cleanup();
             }
         }
@@ -262,37 +266,26 @@ namespace Sha512CrackerWpfApp
         {
             if (!isPaused)
             {
-                // Если не на паузе, отменяем задачи и таймер
                 cts.Cancel();
                 timerCts.Cancel();
-                progressCts.Cancel();
-                // Останавливаем секундомер
                 stopwatch.Stop();
-                // Сохраняем прогресс в файл
                 SaveProgress();
-                // Меняем текст кнопки на "Возобновить"
                 PauseResumeButton.Content = "Возобновить";
-                // Устанавливаем флаг паузы
                 isPaused = true;
-                // Кнопка "Начать" остается неактивной
             }
             else
             {
-                // Если на паузе, возобновляем работу
                 cts = new CancellationTokenSource();
                 timerCts = new CancellationTokenSource();
-                progressCts = new CancellationTokenSource();
                 stopwatch.Start();
                 timerTask = UpdateTimerAsync(timerCts.Token);
-                progressUpdateTask = UpdateProgressAsync(progressCts.Token);
+                Task progressTask = UpdateProgressAsync(timerCts.Token);
                 PauseResumeButton.Content = "Пауза";
                 isPaused = false;
-                // Кнопка "Начать" остается неактивной
 
                 try
                 {
-                    // Возобновляем процесс взлома
-                    await RunCrackerAsync(cts.Token);
+                    await Task.Run(() => Crack(currentIndex, (long)Math.Pow(charset.Length, passwordLength), targetHashes.ToArray(), cts.Token), cts.Token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -308,24 +301,20 @@ namespace Sha512CrackerWpfApp
         // Обработчик нажатия кнопки "Сброс"
         private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
-            // Если взлом активен, отменяем задачи
             if (stopwatch.IsRunning)
             {
                 cts?.Cancel();
                 timerCts?.Cancel();
-                progressCts?.Cancel();
                 stopwatch.Stop();
             }
-            // Очищаем прогресс
             foundHashes.Clear();
-            currentPasswords.Clear();
-            currentIndexes.Clear();
+            currentPassword = "Нет данных";
+            currentIndex = 0;
             ResultsTextBox.Clear();
             ThreadProgressListBox.Items.Clear();
             FoundCountTextBlock.Text = $"Найдено: 0/{targetHashes?.Count ?? 0}";
             TimerTextBlock.Text = "Прошедшее время: 00:00:00";
             savedElapsedTicks = 0;
-            // Удаляем файлы прогресса и результатов, если они существуют
             if (File.Exists("progress.txt"))
             {
                 try
@@ -350,7 +339,6 @@ namespace Sha512CrackerWpfApp
                     ResultsTextBox.AppendText($"Ошибка удаления файла результатов: {ex.Message}\n");
                 }
             }
-            // Восстанавливаем состояние кнопок
             StartButton.IsEnabled = true;
             PauseResumeButton.IsEnabled = false;
             PauseResumeButton.Content = "Пауза";
@@ -358,89 +346,36 @@ namespace Sha512CrackerWpfApp
             isPaused = false;
         }
 
-        // Запуска взлома
-        private async Task RunCrackerAsync(CancellationToken token)
+        // Метод взлома для перебора комбинаций
+        private void Crack(long start, long end, string[] hashesToCrack, CancellationToken token)
         {
-            // Вычисляем общее количество комбинаций паролей
-            long totalCombinations = (long)Math.Pow(Charset.Length, PasswordLength);
-            // Определяем количество потоков на основе числа процессоров
-            int numThreads = Environment.ProcessorCount;
-            // Вычисляем размер блока комбинаций для каждого потока
-            long chunkSize = totalCombinations / numThreads;
-            // Создаем массив задач
-            Task[] tasks = new Task[numThreads];
+            long charsetSize = charset.Length;
 
-            // Запускаем задачи для каждого потока
-            for (int i = 0; i < numThreads; i++)
-            {
-                // Определяем начало и конец диапазона для потока
-                long start = i * chunkSize;
-                long end = (i == numThreads - 1) ? totalCombinations : start + chunkSize;
-                // Если есть сохраненный индекс, начинаем с него
-                long savedIndex = currentIndexes.ContainsKey(i) ? currentIndexes[i] : start;
-                start = Math.Max(start, savedIndex);
-                int threadId = i;
-                // Создаем задачу, которая выполняет взлом в указанном диапазоне
-                tasks[i] = Task.Run(() => Crack(start, end, targetHashes.ToArray(), threadId, token), token);
-                // Task.Run запускает метод Crack в отдельном потоке
-                // Передаем threadId для идентификации потока в коллекции currentPasswords.
-                // Токен отмены позволяет остановить задачу при паузе.
-            }
-
-            // Ожидаем завершения всех задач
-            await Task.WhenAll(tasks);
-            // Пояснение: Task.WhenAll возвращает управление, когда все задачи завершены
-            // или выброшено исключение (например, при отмене через token).
-
-            // Проверяем, найдены ли все хэши
-            if (foundHashes.Count < targetHashes.Count)
-            {
-                foreach (var hash in targetHashes.Where(h => !foundHashes.Contains(h)))
-                {
-                    Dispatcher.Invoke(() => ResultsTextBox.AppendText($"Пароль не найден для {hash}.\n"));
-                }
-            }
-        }
-
-        // Метод взлома для указанного диапазона комбинаций
-        private void Crack(long start, long end, string[] hashesToCrack, int threadId, CancellationToken token)
-        {
-            long charsetSize = Charset.Length;
-
-            // Перебираем комбинации в заданном диапазоне
             for (long i = start; i < end; i++)
             {
-                // Проверяем, не была ли задача отменена
                 token.ThrowIfCancellationRequested();
-                // Обновляем текущий индекс потока
-                currentIndexes.AddOrUpdate(threadId, i, (key, oldValue) => i);
+                currentIndex = i;
 
                 // Генерируем пароль
                 StringBuilder password = new StringBuilder();
                 long temp = i;
-                for (int j = 0; j < PasswordLength; j++)
+                for (int j = 0; j < passwordLength; j++)
                 {
-                    password.Append(Charset[(int)(temp % charsetSize)]);
+                    password.Append(charset[(int)(temp % charsetSize)]);
                     temp /= charsetSize;
                 }
-
-                // Получаем итоговый пароль
-                string finalPassword = password.ToString();
-                // Обновляем текущий пароль потока
-                currentPasswords.AddOrUpdate(threadId, finalPassword, (key, oldValue) => finalPassword);
+                currentPassword = password.ToString();
 
                 // Вычисляем хэш пароля
-                string currentHash = CalculateSha512(finalPassword);
+                string currentHash = CalculateSha512(currentPassword);
                 foreach (string targetHash in hashesToCrack)
                 {
                     if (!foundHashes.Contains(targetHash) && currentHash == targetHash)
                     {
-                        // Сохраняем результат в файл
-                        SaveResult(targetHash, finalPassword);
-                        // Обновляем UI
+                        SaveResult(targetHash, currentPassword);
                         Dispatcher.Invoke(() =>
                         {
-                            ResultsTextBox.AppendText($"Пароль найден для {targetHash}: {finalPassword}\n");
+                            ResultsTextBox.AppendText($"Пароль найден для {targetHash}: {currentPassword}\n");
                             FoundCountTextBlock.Text = $"Найдено: {foundHashes.Count + 1}/{targetHashes.Count}";
                         });
                         lock (foundHashes)
@@ -451,7 +386,6 @@ namespace Sha512CrackerWpfApp
                     }
                 }
 
-                // Если найдены все хэши, завершаем работу
                 if (foundHashes.Count == hashesToCrack.Length)
                 {
                     return;
@@ -462,27 +396,16 @@ namespace Sha512CrackerWpfApp
         // Метод вычисления SHA-512 хэша
         private string CalculateSha512(string input)
         {
-            // Создаем новый экземпляр объекта Sha512Digest из библиотеки BouncyCastle для вычисления SHA-512 хэша
             Sha512Digest digest = new Sha512Digest();
-            // Преобразуем входную строку (пароль) в массив байтов, используя кодировку UTF-8
             byte[] inputBytes = Encoding.UTF8.GetBytes(input);
-
-            // Передаем массив байтов в алгоритм хэширования, указывая начальную позицию (0) и длину массива
             digest.BlockUpdate(inputBytes, 0, inputBytes.Length);
-            // Создаем массив байтов для хранения результата хэша, размер которого определяется методом GetDigestSize
             byte[] hashBytes = new byte[digest.GetDigestSize()];
-
-            // Завершаем процесс хэширования и записываем результат в массив hashBytes, начиная с позиции 0
             digest.DoFinal(hashBytes, 0);
-            // Создаем StringBuilder для построения строки шестнадцатеричного представления хэша
             StringBuilder sb = new StringBuilder();
-            // Проходим по каждому байту в массиве хэша
             for (int i = 0; i < hashBytes.Length; i++)
             {
-                // Преобразуем байт в строку в шестнадцатеричном формате (две цифры, строчные буквы) и добавляем в StringBuilder
                 sb.Append(hashBytes[i].ToString("x2"));
             }
-            // Возвращаем итоговую строку хэша в виде шестнадцатеричного представления
             return sb.ToString();
         }
 
@@ -491,12 +414,7 @@ namespace Sha512CrackerWpfApp
         {
             var progress = new StringBuilder();
             progress.AppendLine($"Elapsed Time: {stopwatch.ElapsedTicks + savedElapsedTicks}");
-            progress.AppendLine("Текущие пароли:");
-            foreach (var kvp in currentPasswords.OrderBy(k => k.Key))
-            {
-                long index = currentIndexes.ContainsKey(kvp.Key) ? currentIndexes[kvp.Key] : 0;
-                progress.AppendLine($"Поток {kvp.Key + 1}: {kvp.Value}:{index}");
-            }
+            progress.AppendLine($"Пароль: {currentPassword}:{currentIndex}");
             File.WriteAllText("progress.txt", progress.ToString());
         }
 
@@ -520,7 +438,6 @@ namespace Sha512CrackerWpfApp
             {
                 cts?.Cancel();
                 timerCts?.Cancel();
-                progressCts?.Cancel();
                 SaveProgress();
             }
         }
@@ -531,13 +448,9 @@ namespace Sha512CrackerWpfApp
             stopwatch.Stop();
             timerCts?.Cancel();
             timerTask?.Wait();
-            progressCts?.Cancel();
-            progressUpdateTask?.Wait();
             cts?.Dispose();
             timerCts?.Dispose();
             timerCts = null;
-            progressCts?.Dispose();
-            progressCts = null;
             if (!isPaused)
             {
                 StartButton.IsEnabled = true;

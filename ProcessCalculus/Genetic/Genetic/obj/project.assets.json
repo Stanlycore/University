@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Star\\Desktop\\SAOD_final\\TRY\\Genetic\\Genetic\\Genetic.csproj",
+      "projectUniqueName": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\Genetic\\Genetic\\Genetic.csproj",
       "projectName": "Genetic",
-      "projectPath": "C:\\Users\\Star\\Desktop\\SAOD_final\\TRY\\Genetic\\Genetic\\Genetic.csproj",
+      "projectPath": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\Genetic\\Genetic\\Genetic.csproj",
       "packagesPath": "C:\\Users\\Star\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Star\\Desktop\\SAOD_final\\TRY\\Genetic\\Genetic\\obj\\",
+      "outputPath": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\Genetic\\Genetic\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

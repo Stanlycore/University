@@ -1,13 +1,13 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\Star\\Desktop\\SAOD_final\\TRY\\Genetic\\",
+  "WorkspaceRootPath": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\Genetic\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E2CD4E09-03AB-4E7C-8CAA-491FCF2EC50D}|Genetic\\Genetic.csproj|c:\\users\\star\\desktop\\saod_final\\try\\genetic\\genetic\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{E2CD4E09-03AB-4E7C-8CAA-491FCF2EC50D}|Genetic\\Genetic.csproj|c:\\users\\star\\documents\\github\\university\\processcalculus\\genetic\\genetic\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{E2CD4E09-03AB-4E7C-8CAA-491FCF2EC50D}|Genetic\\Genetic.csproj|solutionrelative:genetic\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{E2CD4E09-03AB-4E7C-8CAA-491FCF2EC50D}|Genetic\\Genetic.csproj|c:\\users\\star\\desktop\\saod_final\\try\\genetic\\genetic\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "AbsoluteMoniker": "D:0:0:{E2CD4E09-03AB-4E7C-8CAA-491FCF2EC50D}|Genetic\\Genetic.csproj|c:\\users\\star\\documents\\github\\university\\processcalculus\\genetic\\genetic\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{E2CD4E09-03AB-4E7C-8CAA-491FCF2EC50D}|Genetic\\Genetic.csproj|solutionrelative:genetic\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
@@ -24,9 +24,9 @@
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "MainWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\Star\\Desktop\\SAOD_final\\TRY\\Genetic\\Genetic\\MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\Genetic\\Genetic\\MainWindow.xaml",
               "RelativeDocumentMoniker": "Genetic\\MainWindow.xaml",
-              "ToolTip": "C:\\Users\\Star\\Desktop\\SAOD_final\\TRY\\Genetic\\Genetic\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\Genetic\\Genetic\\MainWindow.xaml",
               "RelativeToolTip": "Genetic\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2025-05-01T15:16:07.38Z"
@@ -35,11 +35,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\Star\\Desktop\\SAOD_final\\TRY\\Genetic\\Genetic\\MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\Genetic\\Genetic\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "Genetic\\MainWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\Star\\Desktop\\SAOD_final\\TRY\\Genetic\\Genetic\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\Genetic\\Genetic\\MainWindow.xaml.cs",
               "RelativeToolTip": "Genetic\\MainWindow.xaml.cs",
-              "ViewState": "AQIAABwBAAAAAAAAAADgv5EBAAASAAAA",
+              "ViewState": "AQIAAG8BAAAAAAAAAADwv5gBAAA3AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-05-01T15:16:07.189Z",
               "EditorCaption": ""

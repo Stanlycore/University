@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Genetic
-build_property.ProjectDir = C:\Users\Star\Desktop\SAOD_final\TRY\Genetic\Genetic\
+build_property.ProjectDir = C:\Users\Star\Documents\GitHub\University\ProcessCalculus\Genetic\Genetic\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

@@ -51,11 +51,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Star\\Desktop\\SAOD_final\\TRY\\Sha512Cracker\\Sha512Cracker\\Sha512Cracker.csproj",
+      "projectUniqueName": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\Sha512Cracker\\Sha512Cracker\\Sha512Cracker.csproj",
       "projectName": "Sha512Cracker",
-      "projectPath": "C:\\Users\\Star\\Desktop\\SAOD_final\\TRY\\Sha512Cracker\\Sha512Cracker\\Sha512Cracker.csproj",
+      "projectPath": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\Sha512Cracker\\Sha512Cracker\\Sha512Cracker.csproj",
       "packagesPath": "C:\\Users\\Star\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Star\\Desktop\\SAOD_final\\TRY\\Sha512Cracker\\Sha512Cracker\\obj\\",
+      "outputPath": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\Sha512Cracker\\Sha512Cracker\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "K37r6FgDMEXHrAMhs6pvm9dUzzNpCPXg6zUvG5/hu6GbpLHiS0qb3bZJDUmccHQiLCVptw4/tyAxHA4GktKp7w==",
+  "dgSpecHash": "t497HzLR5pOxLRoamjbPU8q0Bp+sg4TICjLupFg5CWT4PRxAF5niDD0fjlvyn7ZzxfGSKdCYtH7Aiw21DwlhGg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Star\\Desktop\\SAOD_final\\TRY\\Sha512Cracker\\Sha512Cracker\\Sha512Cracker.csproj",
+  "projectFilePath": "C:\\Users\\Star\\Documents\\GitHub\\University\\ProcessCalculus\\Sha512Cracker\\Sha512Cracker\\Sha512Cracker.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Star\\.nuget\\packages\\bouncycastle.cryptography\\2.5.1\\bouncycastle.cryptography.2.5.1.nupkg.sha512"
   ],

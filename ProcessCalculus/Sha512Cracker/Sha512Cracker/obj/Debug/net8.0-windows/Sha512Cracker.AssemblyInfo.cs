@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Sha512Cracker")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d96ed14647aa5743a4545713a4ec9f371851b490")]
 [assembly: System.Reflection.AssemblyProductAttribute("Sha512Cracker")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Sha512Cracker")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
