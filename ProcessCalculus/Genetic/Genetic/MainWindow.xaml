@@ -1,0 +1,36 @@
+﻿<Window x:Class="GeneticAlgorithmTSP.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Генетический алгоритм" Height="650" Width="850">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
+            <Label Content="Число потоков:"/>
+            <TextBox x:Name="ThreadsCountTextBox" Width="50" Text="4" Margin="5"/>
+            <Label Content="Размер популяции:"/>
+            <TextBox x:Name="PopulationSizeTextBox" Width="50" Text="100" Margin="5"/>
+            <Button x:Name="GenerateCitiesButton" Content="Сгенерировать точки" Click="GenerateCitiesButton_Click" Margin="5"/>
+            <Button x:Name="ClearCitiesButton" Content="Очистить точки" Click="ClearCitiesButton_Click" Margin="5"/>
+            <Button x:Name="StartButton" Content="Запустить" Click="StartButton_Click" Margin="5"/>
+            <Button x:Name="StopButton" Content="Остановить" Click="StopButton_Click" Margin="5"/>
+        </StackPanel>
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Canvas x:Name="RouteCanvas" Grid.Column="0" Background="White" Width="550" Height="450" MouseLeftButtonDown="RouteCanvas_MouseLeftButtonDown"/>
+            <StackPanel Grid.Column="1" Margin="10">
+                <Label Content="Поколение:"/>
+                <TextBlock x:Name="GenerationTextBlock" Text="0"/>
+                <Label Content="Лучшая длина маршрута:"/>
+                <TextBlock x:Name="BestDistanceTextBlock" Text="0"/>
+                <Label Content="Количество точек:"/>
+                <TextBlock x:Name="CitiesCountTextBlock" Text="0"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
