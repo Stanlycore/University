@@ -7,9 +7,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+
+        <!-- Панель управления -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10">
-            <Label Content="Число потоков:"/>
-            <TextBox x:Name="ThreadsCountTextBox" Width="50" Text="4" Margin="5"/>
             <Label Content="Размер популяции:"/>
             <TextBox x:Name="PopulationSizeTextBox" Width="50" Text="100" Margin="5"/>
             <Button x:Name="GenerateCitiesButton" Content="Сгенерировать точки" Click="GenerateCitiesButton_Click" Margin="5"/>
@@ -17,12 +17,18 @@
             <Button x:Name="StartButton" Content="Запустить" Click="StartButton_Click" Margin="5"/>
             <Button x:Name="StopButton" Content="Остановить" Click="StopButton_Click" Margin="5"/>
         </StackPanel>
+
+        <!-- Основная область -->
         <Grid Grid.Row="1" Margin="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
+
+            <!-- Поле для отрисовки маршрутов -->
             <Canvas x:Name="RouteCanvas" Grid.Column="0" Background="White" Width="550" Height="450" MouseLeftButtonDown="RouteCanvas_MouseLeftButtonDown"/>
+
+            <!-- Статистика -->
             <StackPanel Grid.Column="1" Margin="10">
                 <Label Content="Поколение:"/>
                 <TextBlock x:Name="GenerationTextBlock" Text="0"/>
@@ -30,6 +36,8 @@
                 <TextBlock x:Name="BestDistanceTextBlock" Text="0"/>
                 <Label Content="Количество точек:"/>
                 <TextBlock x:Name="CitiesCountTextBlock" Text="0"/>
+                <Label Content="Статус:"/>
+                <TextBlock x:Name="StatusTextBlock" Text="Ожидание запуска"/>
             </StackPanel>
         </Grid>
     </Grid>

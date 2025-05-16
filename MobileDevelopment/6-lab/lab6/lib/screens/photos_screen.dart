@@ -118,8 +118,8 @@ class PhotosScreen extends StatelessWidget {
                 ),
                 child: SizedBox(
                   width: double.infinity,
-                  height: 150, // Явно задаем высоту изображения
-                  child: Image.network(
+                  height: 150,
+                  child: Image.network(         ///////////////////////////////////////////////////////////////////////////
                     photo.imgSrc ?? '',
                     fit: BoxFit.cover,
                     width: double.infinity,

@@ -14,45 +14,55 @@ namespace GeneticAlgorithmTSP
 {
     public partial class MainWindow : Window
     {
-        // Список городов (координаты)
+        // Список городов (точек) на карте
         private List<Point> cities;
-        // Текущая популяция
+
+        // Текущая популяция маршрутов
         private List<Individual> population;
-        // Лучший маршрут
+
+        // Лучший маршрут в текущей итерации
         private Individual bestIndividual;
-        // Флаг для остановки алгоритма
+
+        // Флаг для остановки выполнения алгоритма
         private volatile bool isRunning;
-        // Диспетчер для обновления UI
+
+        // Диспетчер главного потока, используется для обновления UI
         private Dispatcher uiDispatcher;
-        // Текущий номер поколения
+
+        // Номер текущего поколения
         private int generation;
-        // Размер сетки
+
+        // Размер ячеек сетки
         private const double GridSize = 50;
-        // Радиус для определения клика по точке (для удаления)
+
+        // Радиус клика, чтобы удалить точку
         private const double ClickRadius = 8;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            // Сохраняем диспетчер UI-потока, чтобы потом обновлять интерфейс из других потоков
             uiDispatcher = Dispatcher.CurrentDispatcher;
+
             cities = new List<Point>();
             DrawGrid();
             UpdateCitiesCount();
         }
 
-        // Обработчик клика по канвасу для добавления или удаления города
+        /// <summary>
+        /// Обработчик клика по канвасу: добавляет или удаляет точку.
+        /// </summary>
         private void RouteCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (!isRunning)
             {
                 Point clickPoint = e.GetPosition(RouteCanvas);
-
-                // Проверка, находится ли клик рядом с существующей точкой (для удаления)
                 Point? pointToRemove = null;
+
                 foreach (var city in cities)
                 {
-                    double distance = CalculateDistance(clickPoint, city);
-                    if (distance <= ClickRadius)
+                    if (CalculateDistance(clickPoint, city) <= ClickRadius)
                     {
                         pointToRemove = city;
                         break;
@@ -61,16 +71,14 @@ namespace GeneticAlgorithmTSP
 
                 if (pointToRemove.HasValue)
                 {
-                    // Удаление точки
                     cities.Remove(pointToRemove.Value);
                 }
                 else
                 {
-                    // Проверка, нет ли уже точки в этой позиции
                     bool pointExists = cities.Any(city => CalculateDistance(city, clickPoint) < 1.0);
-                    if (!pointExists && clickPoint.X >= 0 && clickPoint.X <= RouteCanvas.Width && clickPoint.Y >= 0 && clickPoint.Y <= RouteCanvas.Height)
+                    if (!pointExists && clickPoint.X >= 0 && clickPoint.X <= RouteCanvas.Width &&
+                        clickPoint.Y >= 0 && clickPoint.Y <= RouteCanvas.Height)
                     {
-                        // Добавление новой точки
                         cities.Add(clickPoint);
                     }
                 }
@@ -80,21 +88,23 @@ namespace GeneticAlgorithmTSP
             }
         }
 
-        // Обработчик кнопки "Сгенерировать точки"
+        /// <summary>
+        /// Генерирует случайные точки (города).
+        /// </summary>
         private void GenerateCitiesButton_Click(object sender, RoutedEventArgs e)
         {
             if (!isRunning)
             {
                 cities.Clear();
                 Random rand = new Random();
-                int cityCount = rand.Next(10, 21); // Случайное количество городов от 10 до 20
+                int cityCount = rand.Next(10, 21);
+
                 for (int i = 0; i < cityCount; i++)
                 {
                     double x = rand.NextDouble() * RouteCanvas.Width;
                     double y = rand.NextDouble() * RouteCanvas.Height;
                     Point newPoint = new Point(x, y);
 
-                    // Проверка, чтобы точка не совпадала с уже существующими
                     bool pointExists = cities.Any(city => CalculateDistance(city, newPoint) < 1.0);
                     if (!pointExists)
                     {
@@ -102,15 +112,18 @@ namespace GeneticAlgorithmTSP
                     }
                     else
                     {
-                        i--; // Повторить попытку, если точка совпала
+                        i--;
                     }
                 }
+
                 DrawCities();
                 UpdateCitiesCount();
             }
         }
 
-        // Обработчик кнопки "Очистить точки"
+        /// <summary>
+        /// Очищает все точки.
+        /// </summary>
         private void ClearCitiesButton_Click(object sender, RoutedEventArgs e)
         {
             if (!isRunning)
@@ -122,7 +135,10 @@ namespace GeneticAlgorithmTSP
             }
         }
 
-        // Обновление количества точек в UI
+        /// <summary>
+        /// Обновляет количество точек в UI.
+        /// Так как этот метод может вызываться из другого потока, используем Dispatcher.
+        /// </summary>
         private void UpdateCitiesCount()
         {
             uiDispatcher.Invoke(() =>
@@ -131,31 +147,18 @@ namespace GeneticAlgorithmTSP
             });
         }
 
-        // Отрисовка координатной сетки
+        /// <summary>
+        /// Рисует координатную сетку на канвасе.
+        /// </summary>
         private void DrawGrid()
         {
             RouteCanvas.Children.Clear();
 
-            // Отрисовка линий сетки
             for (double x = 0; x <= RouteCanvas.Width; x += GridSize)
             {
-                var line = new Line
-                {
-                    X1 = x,
-                    Y1 = 0,
-                    X2 = x,
-                    Y2 = RouteCanvas.Height,
-                    Stroke = Brushes.LightGray,
-                    StrokeThickness = 1
-                };
+                var line = new Line { X1 = x, Y1 = 0, X2 = x, Y2 = RouteCanvas.Height, Stroke = Brushes.LightGray };
                 RouteCanvas.Children.Add(line);
-
-                // Подписи по оси X
-                var text = new TextBlock
-                {
-                    Text = x.ToString(),
-                    Foreground = Brushes.Black
-                };
+                var text = new TextBlock { Text = x.ToString(), Foreground = Brushes.Black };
                 Canvas.SetLeft(text, x - 10);
                 Canvas.SetTop(text, RouteCanvas.Height + 5);
                 RouteCanvas.Children.Add(text);
@@ -163,52 +166,23 @@ namespace GeneticAlgorithmTSP
 
             for (double y = 0; y <= RouteCanvas.Height; y += GridSize)
             {
-                var line = new Line
-                {
-                    X1 = 0,
-                    Y1 = y,
-                    X2 = RouteCanvas.Width,
-                    Y2 = y,
-                    Stroke = Brushes.LightGray,
-                    StrokeThickness = 1
-                };
+                var line = new Line { X1 = 0, Y1 = y, X2 = RouteCanvas.Width, Y2 = y, Stroke = Brushes.LightGray };
                 RouteCanvas.Children.Add(line);
-
-                // Подписи по оси Y
-                var text = new TextBlock
-                {
-                    Text = y.ToString(),
-                    Foreground = Brushes.Black
-                };
+                var text = new TextBlock { Text = y.ToString(), Foreground = Brushes.Black };
                 Canvas.SetLeft(text, -30);
                 Canvas.SetTop(text, y - 10);
                 RouteCanvas.Children.Add(text);
             }
 
-            // Оси X и Y
-            var xAxis = new Line
-            {
-                X1 = 0,
-                Y1 = 0,
-                X2 = RouteCanvas.Width,
-                Y2 = 0,
-                Stroke = Brushes.Black,
-                StrokeThickness = 2
-            };
-            var yAxis = new Line
-            {
-                X1 = 0,
-                Y1 = 0,
-                X2 = 0,
-                Y2 = RouteCanvas.Height,
-                Stroke = Brushes.Black,
-                StrokeThickness = 2
-            };
+            var xAxis = new Line { X1 = 0, Y1 = 0, X2 = RouteCanvas.Width, Y2 = 0, Stroke = Brushes.Black };
+            var yAxis = new Line { X1 = 0, Y1 = 0, X2 = 0, Y2 = RouteCanvas.Height, Stroke = Brushes.Black };
             RouteCanvas.Children.Add(xAxis);
             RouteCanvas.Children.Add(yAxis);
         }
 
-        // Отрисовка городов
+        /// <summary>
+        /// Отрисовывает города на канвасе.
+        /// </summary>
         private void DrawCities()
         {
             RouteCanvas.Children.Clear();
@@ -222,7 +196,10 @@ namespace GeneticAlgorithmTSP
             }
         }
 
-        // Обработчик нажатия кнопки "Запустить"
+        /// <summary>
+        /// Запуск генетического алгоритма в отдельном потоке.
+        /// Используется Task.Run(), но можно заменить на Thread.
+        /// </summary>
         private void StartButton_Click(object sender, RoutedEventArgs e)
         {
             if (cities.Count < 4)
@@ -230,11 +207,7 @@ namespace GeneticAlgorithmTSP
                 MessageBox.Show("Добавьте хотя бы 4 точки!");
                 return;
             }
-            if (!int.TryParse(ThreadsCountTextBox.Text, out int threadsCount) || threadsCount < 1)
-            {
-                MessageBox.Show("Введите корректное число потоков!");
-                return;
-            }
+
             if (!int.TryParse(PopulationSizeTextBox.Text, out int populationSize) || populationSize < 10)
             {
                 MessageBox.Show("Введите корректный размер популяции (не менее 10)!");
@@ -247,93 +220,65 @@ namespace GeneticAlgorithmTSP
             GenerateCitiesButton.IsEnabled = false;
             ClearCitiesButton.IsEnabled = false;
 
-            // Запуск генетического алгоритма в отдельном потоке
-            Task.Run(() => RunGeneticAlgorithm(threadsCount, populationSize));
+            // 🔁 ВСЁ, ЧТО ПРОИСХОДИТ ДАЛЕЕ, ВЫПОЛНЯЕТСЯ В ФОН. ПОТОКЕ
+            Task.Run(() => RunGeneticAlgorithm(populationSize));
         }
 
-        // Обработчик нажатия кнопки "Остановить"
+        /// <summary>
+        /// Останавливает работу алгоритма.
+        /// </summary>
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             isRunning = false;
-            StartButton.IsEnabled = true;
-            StopButton.IsEnabled = true;
-            GenerateCitiesButton.IsEnabled = true;
-            ClearCitiesButton.IsEnabled = true;
         }
 
-        // Основной метод генетического алгоритма с явным использованием ThreadPool
-        private void RunGeneticAlgorithm(int threadsCount, int populationSize)
+        /// <summary>
+        /// Основной цикл генетического алгоритма.
+        /// Выполняется в фоновом потоке.
+        /// </summary>
+        private void RunGeneticAlgorithm(int populationSize)
         {
-            // Инициализация начальной популяции
+            // Инициализируем начальную популяцию
             population = InitializePopulation(populationSize);
+
+            // Находим лучшую особь среди начальной популяции
             bestIndividual = population.OrderBy(ind => ind.Fitness).First();
+
             generation = 0;
 
-            // Установка максимального числа потоков в ThreadPool
-            ThreadPool.SetMaxThreads(1, threadsCount);
-
-            // Основной цикл алгоритма
             while (isRunning)
             {
                 generation++;
-                var newPopulation = new List<Individual> { bestIndividual }; // Элитизм: сохраняем лучший маршрут
 
-                // Объект для синхронизации добавления в новую популяцию
-                var populationLock = new object();
-                // Счётчик завершённых задач
-                var completedTasks = 0;
-                var tasksLock = new object();
-                var waitHandle = new ManualResetEvent(false);
+                // Элитизм: сохраняем лучшего индивида
+                var newPopulation = new List<Individual> { bestIndividual };
 
-                // Разделение работы на подзадачи
-                int individualsPerThread = (populationSize - 1) / threadsCount;
-                for (int i = 0; i < threadsCount; i++)
+                Parallel.For(0, populationSize - 1, index =>
                 {
-                    int startIndex = i * individualsPerThread;
-                    int count = i == threadsCount - 1 ? populationSize - 1 - startIndex : individualsPerThread;
+                    // Турнирная селекция: выбираем родителя
+                    var parent = TournamentSelection();
 
-                    // Использование ThreadPool
-                    ThreadPool.QueueUserWorkItem(state =>
+                    // Клонируем его маршрут
+                    var child = new Individual((int[])parent.Route.Clone(), parent.Fitness);
+
+                    // Применяем мутацию
+                    Mutate(child);
+
+                    // Добавляем в новую популяцию с синхронизацией
+                    lock (newPopulation)
                     {
-                        // Выбор родителя через турнирную селекцию
-                        var parent = TournamentSelection();
+                        newPopulation.Add(child);
+                    }
+                });
 
-                        var localPopulation = new List<Individual>();
-                        for (int j = 0; j < count; j++)
-                        {
-
-                            // Создание новой особи путём мутации
-                            var child = new Individual(parent.Route.ToArray(), parent.Fitness);
-                            Mutate(child); // Мутация
-                            localPopulation.Add(child);
-                        }
-
-                        // Синхронизированное добавление в новую популяцию
-                        lock (populationLock)
-                        {
-                            newPopulation.AddRange(localPopulation);
-                        }
-
-                        // Увеличение счётчика завершённых задач
-                        lock (tasksLock)
-                        {
-                            completedTasks++;
-                            if (completedTasks == threadsCount)
-                            {
-                                waitHandle.Set(); // Сигнал завершения всех задач
-                            }
-                        }
-                    });
-                }
-
-                // Ожидание завершения всех задач в ThreadPool
-                waitHandle.WaitOne();
-
-                // Обновление популяции
+                // Обновляем текущую популяцию
                 population = newPopulation;
+
+                // Находим лучшего индивида в новой популяции
                 bestIndividual = population.OrderBy(ind => ind.Fitness).First();
 
-                // Обновление UI в главном потоке
+                // 🔁 ОБНОВЛЕНИЕ UI ИЗ ФОН. ПОТОКА
+                // Для этого используем Dispatcher
                 uiDispatcher.Invoke(() =>
                 {
                     GenerationTextBlock.Text = generation.ToString();
@@ -341,15 +286,23 @@ namespace GeneticAlgorithmTSP
                     DrawPopulation();
                 });
 
-                // Задержка для визуализации
+                // Задержка для наглядности
                 Thread.Sleep(100);
-
-                // Сброс waitHandle для следующей итерации
-                waitHandle.Reset();
             }
+
+            // После остановки восстанавливаем кнопки
+            uiDispatcher.Invoke(() =>
+            {
+                StartButton.IsEnabled = true;
+                StopButton.IsEnabled = false;
+                GenerateCitiesButton.IsEnabled = true;
+                ClearCitiesButton.IsEnabled = true;
+            });
         }
 
-        // Инициализация начальной популяции
+        /// <summary>
+        /// Инициализация начальной популяции случайными маршрутами.
+        /// </summary>
         private List<Individual> InitializePopulation(int size)
         {
             var pop = new List<Individual>();
@@ -362,7 +315,9 @@ namespace GeneticAlgorithmTSP
             return pop;
         }
 
-        // Турнирная селекция
+        /// <summary>
+        /// Турнирная селекция: выбирает наиболее приспособленного индивида из случайных.
+        /// </summary>
         private Individual TournamentSelection()
         {
             Random rand = new Random();
@@ -371,147 +326,123 @@ namespace GeneticAlgorithmTSP
             return tournament.OrderBy(ind => ind.Fitness).First();
         }
 
-        // Мутация с новой логикой: 25% особей — 2 мутации, 30% особей - 1 мутацию, 10% — случайное количество
+        /// <summary>
+        /// Мутация маршрута (случайное переставление двух точек).
+        /// Также реализованы разные типы мутаций:
+        /// - 15% особей получают 2 мутации,
+        /// - 30% — 1 мутацию,
+        /// - 10% — случайное число мутаций.
+        /// </summary>
         private void Mutate(Individual individual)
         {
             Random rand = new Random();
             double randomValue = rand.NextDouble();
 
-            if (randomValue < 0.15) // 15% особей получают 2 мутации
+            if (randomValue < 0.15)
             {
-                // Первая мутация
-                int i1 = rand.Next(cities.Count);
-                int j1 = rand.Next(cities.Count);
-                int temp1 = individual.Route[i1];
-                individual.Route[i1] = individual.Route[j1];
-                individual.Route[j1] = temp1;
-
-                // Вторая мутация
-                int i2 = rand.Next(cities.Count);
-                int j2 = rand.Next(cities.Count);
-                int temp2 = individual.Route[i2];
-                individual.Route[i2] = individual.Route[j2];
-                individual.Route[j2] = temp2;
+                SwapRandom(individual.Route, rand);
+                SwapRandom(individual.Route, rand);
             }
-            else if (randomValue < 0.45) // 30% особей получают 1 мутацию
+            else if (randomValue < 0.45)
             {
-
-                int i = rand.Next(cities.Count);
-                int j = rand.Next(cities.Count);
-                int temp = individual.Route[i];
-                individual.Route[i] = individual.Route[j];
-                individual.Route[j] = temp;
+                SwapRandom(individual.Route, rand);
             }
-            else if (rand.NextDouble() < 0.55) // 10% получают случайное количество мутаций (от 1 до cities.Count/2)
+            else if (rand.NextDouble() < 0.1)
             {
                 int maxMutations = Math.Max(1, cities.Count / 2);
                 int mutationCount = rand.Next(1, maxMutations + 1);
-                for (int m = 0; m < mutationCount; m++)
-                {
-                    int i = rand.Next(cities.Count);
-                    int j = rand.Next(cities.Count);
-                    int temp = individual.Route[i];
-                    individual.Route[i] = individual.Route[j];
-                    individual.Route[j] = temp;
-                }
+                for (int m = 0; m < mutationCount; m++) SwapRandom(individual.Route, rand);
             }
 
-            // Пересчёт фитнес-функции после мутаций
             individual.Fitness = CalculateFitness(individual.Route);
         }
 
-        // Вычисление пригодности (длина маршрута)
+        /// <summary>
+        /// Перестановка двух случайных элементов в маршруте.
+        /// </summary>
+        private void SwapRandom(int[] route, Random rand)
+        {
+            int i = rand.Next(cities.Count);
+            int j = rand.Next(cities.Count);
+            int temp = route[i];
+            route[i] = route[j];
+            route[j] = temp;
+        }
+
+        /// <summary>
+        /// Вычисляет длину маршрута (целевая функция).
+        /// </summary>
         private double CalculateFitness(int[] route)
         {
             double distance = 0;
             for (int i = 0; i < cities.Count - 1; i++)
-            {
                 distance += CalculateDistance(cities[route[i]], cities[route[i + 1]]);
-            }
             distance += CalculateDistance(cities[route[cities.Count - 1]], cities[route[0]]);
             return distance;
         }
 
-        // Вычисление расстояния между двумя точками
-        private double CalculateDistance(Point p1, Point p2)
-        {
-            return Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2));
-        }
+        /// <summary>
+        /// Расстояние между двумя точками.
+        /// </summary>
+        private double CalculateDistance(Point p1, Point p2) =>
+            Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2));
 
-        // Отрисовка до 20 лучших особей и лучшего маршрута
+        /// <summary>
+        /// Отрисовка лучших маршрутов и самого лучшего.
+        /// Вызывается из фонового потока через Dispatcher.
+        /// </summary>
         private void DrawPopulation()
         {
             RouteCanvas.Children.Clear();
             DrawGrid();
             DrawCities();
 
-            // Выбор до 20 лучших особей (кроме лучшей, которая будет отрисована отдельно)
             var topIndividuals = population.OrderBy(ind => ind.Fitness).Take(21).ToList();
-            if (topIndividuals.Contains(bestIndividual))
-            {
-                topIndividuals.Remove(bestIndividual); // Удаляем лучшую особь, чтобы не дублировать
-            }
+            if (topIndividuals.Contains(bestIndividual)) topIndividuals.Remove(bestIndividual);
 
-            // Отрисовка до 20 лучших маршрутов серыми линиями
             foreach (var individual in topIndividuals.Take(20))
-            {
-                for (int i = 0; i < cities.Count - 1; i++)
-                {
-                    var line = new Line
-                    {
-                        X1 = cities[individual.Route[i]].X,
-                        Y1 = cities[individual.Route[i]].Y,
-                        X2 = cities[individual.Route[i + 1]].X,
-                        Y2 = cities[individual.Route[i + 1]].Y,
-                        Stroke = Brushes.Gray,
-                        StrokeThickness = 1,
-                        Opacity = 0.2 // Прозрачность для читаемости
-                    };
-                    RouteCanvas.Children.Add(line);
-                }
-                // Замыкание маршрута
-                var closingLine = new Line
-                {
-                    X1 = cities[individual.Route[cities.Count - 1]].X,
-                    Y1 = cities[individual.Route[cities.Count - 1]].Y,
-                    X2 = cities[individual.Route[0]].X,
-                    Y2 = cities[individual.Route[0]].Y,
-                    Stroke = Brushes.Gray,
-                    StrokeThickness = 1,
-                    Opacity = 0.2
-                };
-                RouteCanvas.Children.Add(closingLine);
-            }
+                DrawRoute(individual.Route, Brushes.Gray, 1, 0.2);
 
-            // Отрисовка лучшего маршрута синим цветом
+            DrawRoute(bestIndividual.Route, Brushes.Blue, 2, 1.0);
+        }
+
+        /// <summary>
+        /// Отрисовка одного маршрута на канвасе.
+        /// </summary>
+        private void DrawRoute(int[] route, Brush color, int thickness, double opacity)
+        {
             for (int i = 0; i < cities.Count - 1; i++)
             {
                 var line = new Line
                 {
-                    X1 = cities[bestIndividual.Route[i]].X,
-                    Y1 = cities[bestIndividual.Route[i]].Y,
-                    X2 = cities[bestIndividual.Route[i + 1]].X,
-                    Y2 = cities[bestIndividual.Route[i + 1]].Y,
-                    Stroke = Brushes.Blue,
-                    StrokeThickness = 2
+                    X1 = cities[route[i]].X,
+                    Y1 = cities[route[i]].Y,
+                    X2 = cities[route[i + 1]].X,
+                    Y2 = cities[route[i + 1]].Y,
+                    Stroke = color,
+                    StrokeThickness = thickness,
+                    Opacity = opacity
                 };
                 RouteCanvas.Children.Add(line);
             }
-            // Замыкание лучшего маршрута
-            var closingLineBest = new Line
+
+            var closingLine = new Line
             {
-                X1 = cities[bestIndividual.Route[cities.Count - 1]].X,
-                Y1 = cities[bestIndividual.Route[cities.Count - 1]].Y,
-                X2 = cities[bestIndividual.Route[0]].X,
-                Y2 = cities[bestIndividual.Route[0]].Y,
-                Stroke = Brushes.Blue,
-                StrokeThickness = 2
+                X1 = cities[route[^1]].X,
+                Y1 = cities[route[^1]].Y,
+                X2 = cities[route[0]].X,
+                Y2 = cities[route[0]].Y,
+                Stroke = color,
+                StrokeThickness = thickness,
+                Opacity = opacity
             };
-            RouteCanvas.Children.Add(closingLineBest);
+            RouteCanvas.Children.Add(closingLine);
         }
     }
 
-    // Класс, представляющий особь (индивидуума) в популяции
+    /// <summary>
+    /// Класс, представляющий одну особь (маршрут).
+    /// </summary>
     public class Individual
     {
         public int[] Route { get; set; }

@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Sha512CrackerWpfApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Взломщик паролей SHA-512" Height="497" Width="800" Closing="Window_Closing">
+        Title="Взломщик паролей SHA-512" Height="650" Width="800" Closing="Window_Closing">
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -12,19 +12,18 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Поля для ввода алфавита и длины пароля -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-            <TextBlock Text="Алфавит:" Width="100" VerticalAlignment="Center"/>
-            <TextBox x:Name="CharsetTextBox" Width="400" Height="30" Margin="10,0,10,0" Text="0123456789abcdefghijklmnopqrstuvwxyz"/>
-            <TextBlock Text="Длина пароля:" Width="100" VerticalAlignment="Center"/>
-            <TextBox x:Name="PasswordLengthTextBox" Width="50" Height="30" Margin="10,0,10,0" Text="7"/>
-            <Button x:Name="ConfirmSettingsButton" Content="Подтвердить" Width="100" Click="ConfirmSettingsButton_Click"/>
+        <!-- Текстовое поле для ввода хэшей -->
+        <TextBox x:Name="HashesTextBox" Grid.Row="0" AcceptsReturn="True" AcceptsTab="True" Height="100" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10"/>
+
+        <!-- Поле для ввода количества потоков -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Количество потоков (1–" Margin="0,0,5,0"/>
+            <TextBlock Text="12" Margin="0,0,5,0"/>
+            <TextBlock Text="):" Margin="0,0,5,0"/>
+            <TextBox x:Name="ThreadCountTextBox" Width="50" Text="1" Margin="0,0,10,0"/>
         </StackPanel>
 
-        <!-- Текстовое поле для ввода хэшей -->
-        <TextBox x:Name="HashesTextBox" Grid.Row="1" AcceptsReturn="True" AcceptsTab="True" Height="100" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10"/>
-
-        <!-- Список для отображения текущего пароля -->
+        <!-- Список для отображения прогресса потоков -->
         <ListBox x:Name="ThreadProgressListBox" Grid.Row="2" Margin="0,0,0,10"/>
 
         <!-- Отображение времени и количества найденных хэшей -->
