@@ -220,7 +220,7 @@ namespace GeneticAlgorithmTSP
             GenerateCitiesButton.IsEnabled = false;
             ClearCitiesButton.IsEnabled = false;
 
-            // 🔁 ВСЁ, ЧТО ПРОИСХОДИТ ДАЛЕЕ, ВЫПОЛНЯЕТСЯ В ФОН. ПОТОКЕ
+            // ВСЁ, ЧТО ПРОИСХОДИТ ДАЛЕЕ, ВЫПОЛНЯЕТСЯ В ФОН. ПОТОКЕ
             Task.Run(() => RunGeneticAlgorithm(populationSize));
         }
 
@@ -328,7 +328,7 @@ namespace GeneticAlgorithmTSP
 
         /// <summary>
         /// Мутация маршрута (случайное переставление двух точек).
-        /// Также реализованы разные типы мутаций:
+        /// Разные типы мутаций:
         /// - 15% особей получают 2 мутации,
         /// - 30% — 1 мутацию,
         /// - 10% — случайное число мутаций.
@@ -347,7 +347,7 @@ namespace GeneticAlgorithmTSP
             {
                 SwapRandom(individual.Route, rand);
             }
-            else if (rand.NextDouble() < 0.1)
+            else if (rand.NextDouble() < 0.55)
             {
                 int maxMutations = Math.Max(1, cities.Count / 2);
                 int mutationCount = rand.Next(1, maxMutations + 1);

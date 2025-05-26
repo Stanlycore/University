@@ -558,7 +558,7 @@ namespace Sha512CrackerWpfApp
                 // Обновляем checkedRanges объединенными диапазонами
                 checkedRanges = new ConcurrentBag<(long start, long end)>(mergedRanges);
 
-                Dispatcher.Invoke(() => ResultsTextBox.AppendText($"Прогресс сохранен в {ProgressFile} с объединенными диапазонами\n"));
+                Dispatcher.Invoke(() => ResultsTextBox.AppendText($"Прогресс сохранен в {ProgressFile} \n"));
             }
             catch (Exception ex)
             {

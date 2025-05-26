@@ -36,8 +36,6 @@
                 <TextBlock x:Name="BestDistanceTextBlock" Text="0"/>
                 <Label Content="Количество точек:"/>
                 <TextBlock x:Name="CitiesCountTextBlock" Text="0"/>
-                <Label Content="Статус:"/>
-                <TextBlock x:Name="StatusTextBlock" Text="Ожидание запуска"/>
             </StackPanel>
         </Grid>
     </Grid>
